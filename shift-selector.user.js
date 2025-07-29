@@ -5,8 +5,8 @@
 // @description  Adds collapsible shift selector to IB and OB dock pages with date override, clear button, and auto-refresh
 // @match        https://trans-logistics-eu.amazon.com/ssp/dock/hrz/ib*
 // @match        https://trans-logistics-eu.amazon.com/ssp/dock/hrz/ob*
-// @updateURL    https://raw.githubusercontent.com/BiotroxMk2/amazon-shift-tools/main/shift-selector.user.js
-// @downloadURL  https://raw.githubusercontent.com/BiotroxMk2/amazon-shift-tools/main/shift-selector.user.js
+// @updateURL    https://raw.githubusercontent.com/chatzidk/amazon-shift-tools/main/shift-selector.user.js
+// @downloadURL  https://raw.githubusercontent.com/chatzidk/amazon-shift-tools/main/shift-selector.user.js
 // @grant        none
 // ==/UserScript==
 
