@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Dock Page - Shift Selector
 // @namespace    amazon-shift-filter
-// @version      1.6.2
+// @version      1.6.3
 // @description  Adds collapsible shift selector to IB and OB dock pages with date override, clear button, and auto-refresh
 // @match        https://trans-logistics-eu.amazon.com/ssp/dock/hrz/ib*
 // @match        https://trans-logistics-eu.amazon.com/ssp/dock/hrz/ob*
