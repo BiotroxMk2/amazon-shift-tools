@@ -162,7 +162,10 @@
             toDate = new Date(fromDate.getTime() + 86400000);
 
             startInput.value = fromDate.toISOString().split('T')[0];
+            // Reflect actual FromDate/ToDate into visible date pickers
+            startInput.value = fromDate.toISOString().split('T')[0];
             endInput.value = toDate.toISOString().split('T')[0];
+
         } else {
             const startOverride = startInput.value;
             const endOverride = endInput.value;
