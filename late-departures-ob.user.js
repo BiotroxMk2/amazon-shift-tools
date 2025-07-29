@@ -1,12 +1,15 @@
 // ==UserScript==
-// @name         OB Page - Late Departures 
+// @name         OB Page - Late Departures
 // @namespace    https://trans-logistics-eu.amazon.com/
-// @version      3.2
+// @version      3.2.1
 // @description  Highlights late ADTs (passively) and shows editable popup with persistent fields (12h)
 // @match        https://trans-logistics-eu.amazon.com/ssp/dock/hrz/ob*
+// @updateURL    https://raw.githubusercontent.com/chatzidk/amazon-shift-tools/main/late-departures-ob.user.js
+// @downloadURL  https://raw.githubusercontent.com/chatzidk/amazon-shift-tools/main/late-departures-ob.user.js
 // @grant        none
 // @author       chatzidk
 // ==/UserScript==
+
 
 (function () {
     'use strict';
