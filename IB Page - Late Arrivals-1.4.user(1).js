@@ -1,12 +1,15 @@
 // ==UserScript==
-// @name         IB Page - Late Arrivals 
+// @name         IB Page - Late Arrivals
 // @namespace    https://trans-logistics-eu.amazon.com/
-// @version      1.4
+// @version      1.4.1
 // @description  Highlights late AATs, auto-fills earliest CPT (same day, P ≥ 10), with clean route text
 // @match        https://trans-logistics-eu.amazon.com/ssp/dock/hrz/ib*
+// @updateURL    https://raw.githubusercontent.com/chatzidk/amazon-shift-tools/main/late-arrivals-ib.user.js
+// @downloadURL  https://raw.githubusercontent.com/chatzidk/amazon-shift-tools/main/late-arrivals-ib.user.js
 // @grant        none
-// @author chatzidk
+// @author       chatzidk
 // ==/UserScript==
+
 
 (function () {
     'use strict';
