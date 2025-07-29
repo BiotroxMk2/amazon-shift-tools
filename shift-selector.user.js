@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         Dock Page - Shift Selector
 // @namespace    amazon-shift-filter
-// @version      1.6.4
-// @description  Adds collapsible shift selector to IB and OB dock pages with date override, clear button, and auto-refresh
+// @version      1.6.9
+// @description  Adds shift selector to IB/OB dock pages with calendar date, smart NS logic, persistent UI
 // @match        https://trans-logistics-eu.amazon.com/ssp/dock/hrz/ib*
 // @match        https://trans-logistics-eu.amazon.com/ssp/dock/hrz/ob*
 // @updateURL    https://raw.githubusercontent.com/chatzidk/amazon-shift-tools/main/shift-selector.user.js
@@ -97,7 +97,6 @@
                 <button id="clearDatesBtn">Clear</button>
             </h4>
             <div class="dateRow">Start Date:<br><input type="date" id="startDateInput"></div>
-            <div class="dateRow">End Date:<br><input type="date" id="endDateInput"></div>
             <button class="shiftBtn" data-shift="ES">Early</button>
             <button class="shiftBtn" data-shift="TW">Twilight</button>
             <button class="shiftBtn" data-shift="NS">Night</button>
@@ -107,32 +106,23 @@
 
     const toggle = document.getElementById("shiftSelectorToggle");
     const box = document.getElementById("shiftSelectorBox");
+    const startInput = document.querySelector('#startDateInput');
 
     toggle.addEventListener("click", () => {
         box.style.display = box.style.display === "none" ? "block" : "none";
     });
 
-    const startInput = document.querySelector('#startDateInput');
-    const endInput = document.querySelector('#endDateInput');
-
-    function todayDateStr() {
+    function getSystemDate() {
         const now = new Date();
-        return now.toISOString().split('T')[0];
+        return now.toISOString().split('T')[0]; // YYYY-MM-DD
     }
 
-    startInput.value = todayDateStr();
-    endInput.value = todayDateStr();
-
-    document.getElementById("clearDatesBtn").addEventListener("click", () => {
-        startInput.value = todayDateStr();
-        endInput.value = todayDateStr();
-    });
-
-    function formatDateForInput(dateObj) {
+    function formatDateForSSP(dateObj) {
         return `${(dateObj.getMonth() + 1).toString().padStart(2, '0')}/${dateObj.getDate().toString().padStart(2, '0')}/${dateObj.getFullYear()}`;
     }
 
     function setDropdownSafe(select, value) {
+        if (!select) return;
         const optionExists = Array.from(select.options).some(opt => opt.value === value);
         if (optionExists) {
             select.value = value;
@@ -145,39 +135,27 @@
         if (searchBtn) searchBtn.click();
     }
 
+    function getManualOrSystemDate() {
+        return startInput.value ? new Date(startInput.value) : new Date();
+    }
+
     function setShift(shift) {
         const fromDateInput = document.querySelector('input[dataname="FromDate"]');
         const toDateInput = document.querySelector('input[dataname="ToDate"]');
         const fromTimeSelect = document.querySelector('select[dataname="fromTime"]');
         const toTimeSelect = document.querySelector('select[dataname="toTime"]');
 
+        let fromDate = getManualOrSystemDate();
         const now = new Date();
-        const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-        const yesterday = new Date(today.getTime() - 86400000);
 
-        let fromDate, toDate;
-
-        if (shift === "NS") {
-            fromDate = now.getHours() < 6 ? yesterday : today;
-            toDate = new Date(fromDate.getTime() + 86400000);
-
-            startInput.value = fromDate.toISOString().split('T')[0];
-            // Reflect actual FromDate/ToDate into visible date pickers
-            startInput.value = fromDate.toISOString().split('T')[0];
-           // Ensure visual inputs reflect actual date range logic
-const formatToInputValue = (dateObj) => {
-    return dateObj.toISOString().split('T')[0]; // YYYY-MM-DD
-};
-
-startInput.value = formatToInputValue(fromDate);
-endInput.value = formatToInputValue(toDate);
-
-        } else {
-            const startOverride = startInput.value;
-            const endOverride = endInput.value;
-            fromDate = startOverride ? new Date(startOverride) : today;
-            toDate = endOverride ? new Date(endOverride) : fromDate;
+        if (!startInput.value) {
+            if (shift === "NS" && now.getHours() < 6) {
+                fromDate.setDate(fromDate.getDate() - 1);
+            }
         }
+
+        const toDate = new Date(fromDate);
+        if (shift === "NS") toDate.setDate(fromDate.getDate() + 1);
 
         let fromTime, toTime;
         switch (shift) {
@@ -186,13 +164,16 @@ endInput.value = formatToInputValue(toDate);
             case "NS": fromTime = "20-30"; toTime = "06-00"; break;
         }
 
-        if (fromDateInput && toDateInput && fromTimeSelect && toTimeSelect) {
-            fromDateInput.value = formatDateForInput(fromDate);
-            toDateInput.value = formatDateForInput(toDate);
-            setDropdownSafe(fromTimeSelect, fromTime);
-            setDropdownSafe(toTimeSelect, toTime);
-            setTimeout(triggerFilter, 300);
+        if (fromDateInput && toDateInput) {
+            fromDateInput.value = formatDateForSSP(fromDate);
+            toDateInput.value = formatDateForSSP(toDate);
         }
+
+        setDropdownSafe(fromTimeSelect, fromTime);
+        setDropdownSafe(toTimeSelect, toTime);
+        setTimeout(triggerFilter, 300);
+
+        startInput.value = fromDate.toISOString().split('T')[0];
     }
 
     function setRowsTo100() {
@@ -203,6 +184,11 @@ endInput.value = formatToInputValue(toDate);
         }
     }
 
+    document.getElementById("clearDatesBtn").addEventListener("click", () => {
+        const today = getSystemDate();
+        startInput.value = today;
+    });
+
     document.querySelectorAll('.shiftBtn').forEach(btn => {
         btn.addEventListener('click', () => {
             setShift(btn.dataset.shift);
@@ -210,5 +196,10 @@ endInput.value = formatToInputValue(toDate);
         });
     });
 
-    window.addEventListener('load', () => setTimeout(setRowsTo100, 500));
+    window.addEventListener('load', () => {
+        setTimeout(() => {
+            startInput.value = getSystemDate();
+            setRowsTo100();
+        }, 400);
+    });
 })();
