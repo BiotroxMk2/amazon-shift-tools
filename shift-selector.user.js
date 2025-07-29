@@ -164,7 +164,13 @@
             startInput.value = fromDate.toISOString().split('T')[0];
             // Reflect actual FromDate/ToDate into visible date pickers
             startInput.value = fromDate.toISOString().split('T')[0];
-            endInput.value = toDate.toISOString().split('T')[0];
+           // Ensure visual inputs reflect actual date range logic
+const formatToInputValue = (dateObj) => {
+    return dateObj.toISOString().split('T')[0]; // YYYY-MM-DD
+};
+
+startInput.value = formatToInputValue(fromDate);
+endInput.value = formatToInputValue(toDate);
 
         } else {
             const startOverride = startInput.value;
