@@ -1,14 +1,13 @@
 // ==UserScript==
 // @name         Dock Page - Shift Selector
 // @namespace    amazon-shift-filter
-// @version      1.6.2
+// @version      1.6.1
 // @description  Adds collapsible shift selector to IB and OB dock pages with date override, clear button, and auto-refresh
 // @match        https://trans-logistics-eu.amazon.com/ssp/dock/hrz/ib*
 // @match        https://trans-logistics-eu.amazon.com/ssp/dock/hrz/ob*
 // @updateURL    https://raw.githubusercontent.com/chatzidk/amazon-shift-tools/main/shift-selector.user.js
 // @downloadURL  https://raw.githubusercontent.com/chatzidk/amazon-shift-tools/main/shift-selector.user.js
 // @grant        none
-// @author       chatzidk
 // ==/UserScript==
 
 (function () {
@@ -157,20 +156,16 @@
         const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
         const yesterday = new Date(today.getTime() - 86400000);
 
-        let fromDate;
+        let fromDate, toDate;
+
         if (shift === "NS") {
             fromDate = now.getHours() < 6 ? yesterday : today;
-        } else {
-            const startOverride = startInput.value;
-            fromDate = startOverride ? new Date(startOverride) : today;
-        }
-
-        let toDate;
-        if (shift === "NS") {
             toDate = new Date(fromDate.getTime() + 86400000);
             endInput.value = toDate.toISOString().split('T')[0];
         } else {
+            const startOverride = startInput.value;
             const endOverride = endInput.value;
+            fromDate = startOverride ? new Date(startOverride) : today;
             toDate = endOverride ? new Date(endOverride) : fromDate;
         }
 
