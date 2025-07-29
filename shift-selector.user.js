@@ -1,15 +1,15 @@
 // ==UserScript==
 // @name         Dock Page - Shift Selector
 // @namespace    amazon-shift-filter
-// @version      1.6.1
+// @version      1.6.2
 // @description  Adds collapsible shift selector to IB and OB dock pages with date override, clear button, and auto-refresh
 // @match        https://trans-logistics-eu.amazon.com/ssp/dock/hrz/ib*
 // @match        https://trans-logistics-eu.amazon.com/ssp/dock/hrz/ob*
 // @updateURL    https://raw.githubusercontent.com/chatzidk/amazon-shift-tools/main/shift-selector.user.js
 // @downloadURL  https://raw.githubusercontent.com/chatzidk/amazon-shift-tools/main/shift-selector.user.js
 // @grant        none
+// @author       chatzidk
 // ==/UserScript==
-
 
 (function () {
     'use strict';
@@ -153,32 +153,26 @@
         const fromTimeSelect = document.querySelector('select[dataname="fromTime"]');
         const toTimeSelect = document.querySelector('select[dataname="toTime"]');
 
-        const startDateOverride = startInput.value;
-        const endDateOverride = endInput.value;
-
         const now = new Date();
         const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
         const yesterday = new Date(today.getTime() - 86400000);
-        const tomorrow = new Date(today.getTime() + 86400000);
 
-        let fromDate = startDateOverride
-            ? new Date(startDateOverride)
-            : shift === "NS" && now.getHours() < 6 ? yesterday : today;
+        let fromDate;
+        if (shift === "NS") {
+            fromDate = now.getHours() < 6 ? yesterday : today;
+        } else {
+            const startOverride = startInput.value;
+            fromDate = startOverride ? new Date(startOverride) : today;
+        }
 
-       let toDate;
-
-if (shift === "NS") {
-    // Always +1 day from fromDate for Night Shift
-    toDate = new Date(fromDate.getTime() + 86400000);
-    // Also update the visible end date input
-    endInput.value = toDate.toISOString().split('T')[0];
-} else {
-    // Respect override or fall back to fromDate
-    toDate = endDateOverride
-        ? new Date(endDateOverride)
-        : fromDate;
-}
-
+        let toDate;
+        if (shift === "NS") {
+            toDate = new Date(fromDate.getTime() + 86400000);
+            endInput.value = toDate.toISOString().split('T')[0];
+        } else {
+            const endOverride = endInput.value;
+            toDate = endOverride ? new Date(endOverride) : fromDate;
+        }
 
         let fromTime, toTime;
         switch (shift) {
